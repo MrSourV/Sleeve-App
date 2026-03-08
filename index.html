@@ -45,14 +45,16 @@ body {
   opacity:0; pointer-events:none;
   transition:opacity 0.35s ease, transform 0.35s ease;
   transform:translateY(16px);
-  overflow-y:scroll;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+  overflow:hidden;
   background:var(--bg);
 }
 .screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
 .screen.exit   { opacity:0; transform:translateY(-10px); }
+
+/* Main screen needs to fill and let inner-screen scroll */
+#screen-main {
+  display:flex; flex-direction:column;
+}
 
 /* ── NAV ── */
 .nav-bar {
@@ -115,6 +117,11 @@ body {
 
   /* Loading screen bigger text on iPad */
   .load-wordmark    { font-size:40px; letter-spacing:12px; }
+}
+
+#screen-loading, #screen-pair {
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 /* ══════════════════════════════
@@ -222,7 +229,18 @@ body {
 }
 
 /* ── INNER SCREENS ── */
-.inner-screen { display:none; flex-direction:column; padding:0 0 110px; animation:fadeIn 0.28s ease forwards; min-height:min-content; }
+.inner-screen {
+  display:none; flex-direction:column;
+  position:absolute; inset:0;
+  bottom:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:80px;
+  animation:fadeIn 0.28s ease forwards;
+  min-height:min-content;
+}
 .inner-screen.show { display:flex; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
 
