@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sleeve</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LOADING SCREEN
+════════════════════════════════════════════ -->
+<div class="screen active" id="screen-loading">
+  <div class="load-logo-wrap" id="logoWrap">
+    <svg viewBox="0 0 54 54" fill="none">
+      <path d="M27 7C16.51 7 8 15.51 8 26s8.51 19 19 19 19-8.51 19-19S37.49 7 27 7Z" stroke="#2d7a4f" stroke-width="2.2"/>
+      <path d="M19 26c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8" stroke="#4caf7d" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="27" cy="26" r="3.2" fill="#2d7a4f"/>
+      <path d="M27 18v-4M27 38v-4M19 26h-4M39 26h-4" stroke="#2d7a4f" stroke-width="1.6" stroke-linecap="round" opacity="0.4"/>
+    </svg>
+  </div>
+  <span class="load-name">SLEEVE</span>
+  <div class="load-bar-wrap"><div class="load-bar"></div></div>
+  <span class="load-tagline">Adaptive Mobility System</span>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAIR SCREEN
+════════════════════════════════════════════ -->
+<div class="screen" id="screen-pair">
+  <div class="pair-top">
+    <div class="pair-logo-box" id="pairLogoBox">
+      <svg viewBox="0 0 54 54" fill="none">
+        <path d="M27 7C16.51 7 8 15.51 8 26s8.51 19 19 19 19-8.51 19-19S37.49 7 27 7Z" stroke="#2d7a4f" stroke-width="2.2"/>
+        <path d="M19 26c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8" stroke="#4caf7d" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="27" cy="26" r="3.2" fill="#2d7a4f"/>
+      </svg>
+    </div>
+    <div class="pair-title">SLEEVE</div>
+    <div class="pair-sub">No device connected</div>
+  </div>
+
+  <div class="pair-ring-wrap">
+    <div class="pair-ring r1"></div>
+    <div class="pair-ring r2"></div>
+    <div class="pair-ring r3"></div>
+    <div class="pair-btn-circle" onclick="startPairing()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M8.56 2.9A7 7 0 0 1 19 9v1l2 2-2 2v1a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-1L3 12l2-2V9a7 7 0 0 1 3.56-6.1z"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      </svg>
+      Pair
+    </div>
+  </div>
+
+  <div class="pair-status" id="pairStatus">Tap to scan for device</div>
+
+  <div class="pair-found-card" id="pairFoundCard">
+    <div>
+      <div class="pair-device-name">Sleeve v2 — Right</div>
+      <div class="pair-device-id">SLV-2024-R · BLE 5.0</div>
+    </div>
+    <button class="pair-connect-btn" onclick="connectDevice()">Connect</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════ -->
+<div class="screen" id="screen-main">
+
+  <!-- HOME TAB -->
+  <div class="inner-screen show" id="tab-home">
+    <div class="home-header">
+      <div>
+        <div class="hey">Good morning</div>
+        <div class="name">Dashboard</div>
+      </div>
+      <div class="badge"><div class="badge-dot"></div>Active</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="s-lbl">Session Time</div>
+        <div class="s-val">2.4<span class="s-unit">h</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="s-lbl">Gestures</div>
+        <div class="s-val">14</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-lbl">Accuracy</div>
+        <div class="s-val">92<span class="s-unit">%</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="s-lbl">Signal Avg</div>
+        <div class="s-val">48<span class="s-unit" style="font-size:11px">µV</span></div>
+      </div>
+    </div>
+
+    <div class="battery-card">
+      <div class="batt-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d7a4f" stroke-width="1.8">
+          <rect x="2" y="7" width="18" height="10" rx="2"/>
+          <path d="M22 11v2" stroke-linecap="round" stroke-width="2.2" stroke="#2d7a4f"/>
+          <rect x="4" y="9" width="11" height="6" rx="1" fill="#2d7a4f" stroke="none"/>
+        </svg>
+      </div>
+      <div class="batt-info">
+        <div class="batt-label">Battery · ~4h remaining</div>
+        <div class="batt-bar"><div class="batt-fill"></div></div>
+      </div>
+      <div class="batt-pct">72%</div>
+    </div>
+
+    <div class="section-label">Active Mode</div>
+    <div class="active-mode-card">
+      <div class="mode-icon-sm" id="homeModeIcon">✍️</div>
+      <div class="active-mode-info">
+        <div class="aml">Currently running</div>
+        <div class="amn" id="homeModeText">Writing Mode</div>
+      </div>
+      <button class="change-btn" onclick="goTab('modes')">Change</button>
+    </div>
+  </div>
+
+  <!-- MODES TAB -->
+  <div class="inner-screen" id="tab-modes">
+    <div class="page-header">
+      <div class="page-title">Modes</div>
+      <div class="page-sub">Select an activity preset</div>
+    </div>
+
+    <div class="modes-grid">
+      <div class="mode-card selected" onclick="selectMode(this,'✍️','Writing Mode')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">✍️</div>
+        <div class="mode-name">Writing</div>
+        <div class="mode-desc">Fine-motor pen grip control</div>
+      </div>
+      <div class="mode-card" onclick="selectMode(this,'🍴','Eating Mode')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">🍴</div>
+        <div class="mode-name">Eating</div>
+        <div class="mode-desc">Adaptive utensil grip</div>
+      </div>
+      <div class="mode-card" onclick="selectMode(this,'⌨️','Typing Mode')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">⌨️</div>
+        <div class="mode-name">Typing</div>
+        <div class="mode-desc">Low-resistance finger movement</div>
+      </div>
+      <div class="mode-card" onclick="selectMode(this,'🤝','Power Grip')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">🤝</div>
+        <div class="mode-name">Power Grip</div>
+        <div class="mode-desc">High-force object hold</div>
+      </div>
+      <div class="mode-card" onclick="selectMode(this,'😌','Rest Mode')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">😌</div>
+        <div class="mode-name">Rest</div>
+        <div class="mode-desc">Relaxed, minimal tension</div>
+      </div>
+      <div class="mode-card" onclick="selectMode(this,'💪','Therapy Mode')">
+        <div class="mode-dot"></div>
+        <div class="mode-icon">💪</div>
+        <div class="mode-name">Therapy</div>
+        <div class="mode-desc">Guided rehab patterns</div>
+      </div>
+    </div>
+
+    <div class="sliders">
+      <div class="slider-row">
+        <div class="slider-top">
+          <span class="slider-name">Grip Intensity</span>
+          <span class="slider-val" id="gripVal">60%</span>
+        </div>
+        <input type="range" min="0" max="100" value="60"
+          oninput="document.getElementById('gripVal').textContent=this.value+'%'">
+      </div>
+      <div class="slider-row">
+        <div class="slider-top">
+          <span class="slider-name">Response Speed</span>
+          <span class="slider-val" id="speedVal">Medium</span>
+        </div>
+        <input type="range" min="1" max="3" value="2" oninput="updateSpeed(this.value)">
+      </div>
+    </div>
+
+    <button class="apply-btn" onclick="applyMode()">Apply Mode</button>
+  </div>
+
+  <!-- MUSCLE MONITOR TAB -->
+  <div class="inner-screen" id="tab-muscle">
+    <div class="page-header">
+      <div class="page-title">Muscle Monitor</div>
+      <div class="page-sub">Real-time EMG analysis</div>
+    </div>
+
+    <div class="muscle-grid">
+      <div class="muscle-chip">
+        <div class="mc-name">Flexor</div>
+        <div class="mc-val mc-med" id="mv1">68 µV</div>
+        <div class="mc-bar"><div class="mc-fill mf-med" id="mb1" style="width:68%"></div></div>
+      </div>
+      <div class="muscle-chip">
+        <div class="mc-name">Extensor</div>
+        <div class="mc-val mc-low" id="mv2">42 µV</div>
+        <div class="mc-bar"><div class="mc-fill mf-low" id="mb2" style="width:42%"></div></div>
+      </div>
+      <div class="muscle-chip">
+        <div class="mc-name">Bicep</div>
+        <div class="mc-val mc-high" id="mv3">81 µV</div>
+        <div class="mc-bar"><div class="mc-fill mf-high" id="mb3" style="width:81%"></div></div>
+      </div>
+      <div class="muscle-chip">
+        <div class="mc-name">Tricep</div>
+        <div class="mc-val mc-low" id="mv4">29 µV</div>
+        <div class="mc-bar"><div class="mc-fill mf-low" id="mb4" style="width:29%"></div></div>
+      </div>
+    </div>
+
+    <div class="section-label" style="padding:0 24px;margin-bottom:12px">Waveform</div>
+
+    <div class="graph-card">
+      <div class="graph-title">Flexor / Extensor</div>
+      <canvas class="graph" id="muscleGraph" height="90"></canvas>
+      <div class="graph-labels"><span>Flexor</span><span>Extensor</span></div>
+    </div>
+    <div class="graph-card">
+      <div class="graph-title">Bicep Activation</div>
+      <canvas class="graph" id="bicepGraph" height="90"></canvas>
+      <div class="graph-labels"><span>10s ago</span><span>Now</span></div>
+    </div>
+
+    <div class="session-row">
+      <div class="session-stat"><div class="sv">48 µV</div><div class="sl">Avg Signal</div></div>
+      <div class="session-stat"><div class="sv">81 µV</div><div class="sl">Peak Today</div></div>
+      <div class="session-stat"><div class="sv">2.4h</div><div class="sl">Active Time</div></div>
+    </div>
+  </div>
+
+  <!-- ALERTS TAB -->
+  <div class="inner-screen" id="tab-alerts">
+    <div class="page-header">
+      <div class="page-title">Notifications</div>
+    </div>
+
+    <div class="alerts-top">
+      <div class="section-label" style="padding:0;margin:0">Today</div>
+      <button class="clear-btn" onclick="clearAlerts()">Clear all</button>
+    </div>
+
+    <div class="alerts-list" id="alertsList">
+      <div class="alert-card">
+        <div class="a-stripe warn"></div>
+        <div class="a-icon">🔋</div>
+        <div class="a-body">
+          <div class="a-title">Battery at 72%</div>
+          <div class="a-desc">Consider charging before extended use. ~4h remaining.</div>
+          <div class="a-time">9:14 AM</div>
+        </div>
+        <div class="a-dot"></div>
+      </div>
+      <div class="alert-card">
+        <div class="a-stripe ok"></div>
+        <div class="a-icon">✅</div>
+        <div class="a-body">
+          <div class="a-title">Calibration Complete</div>
+          <div class="a-desc">Muscle mapping updated. Accuracy improved to 92%.</div>
+          <div class="a-time">8:51 AM</div>
+        </div>
+        <div class="a-dot gone"></div>
+      </div>
+      <div class="alert-card">
+        <div class="a-stripe info"></div>
+        <div class="a-icon">📡</div>
+        <div class="a-body">
+          <div class="a-title">Device Paired</div>
+          <div class="a-desc">Sleeve v2 — Right connected via BLE 5.0.</div>
+          <div class="a-time">8:43 AM</div>
+        </div>
+        <div class="a-dot gone"></div>
+      </div>
+      <div class="alert-card">
+        <div class="a-stripe danger"></div>
+        <div class="a-icon">⚠️</div>
+        <div class="a-body">
+          <div class="a-title">High Muscle Tension</div>
+          <div class="a-desc">Bicep activity exceeded threshold. Rest recommended.</div>
+          <div class="a-time">Yesterday · 6:22 PM</div>
+        </div>
+        <div class="a-dot gone"></div>
+      </div>
+      <div class="alert-card">
+        <div class="a-stripe warn"></div>
+        <div class="a-icon">🔁</div>
+        <div class="a-body">
+          <div class="a-title">Firmware Update Available</div>
+          <div class="a-desc">v2.1.4 — stability and new therapy patterns.</div>
+          <div class="a-time">Yesterday · 2:00 PM</div>
+        </div>
+        <div class="a-dot gone"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV BAR -->
+  <nav class="nav-bar">
+    <div class="nav-item active" id="nav-home" onclick="goTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+        <path d="M9 21V12h6v9"/>
+      </svg>
+      Home
+    </div>
+    <div class="nav-item" id="nav-modes" onclick="goTab('modes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+      Modes
+    </div>
+    <div class="nav-item" id="nav-muscle" onclick="goTab('muscle')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <polyline points="2,12 6,6 10,16 14,8 18,13 22,10"/>
+      </svg>
+      Monitor
+    </div>
+    <div class="nav-item" id="nav-alerts" onclick="goTab('alerts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      Alerts
+      <div class="nav-dot"></div>
+    </div>
+  </nav>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
