@@ -24,6 +24,7 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+button, [onclick] { touch-action:manipulation; }
 
 html, body { height:100%; width:100%; }
 
@@ -44,7 +45,10 @@ body {
   opacity:0; pointer-events:none;
   transition:opacity 0.35s ease, transform 0.35s ease;
   transform:translateY(16px);
-  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   background:var(--bg);
 }
 .screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
@@ -206,6 +210,8 @@ body {
   cursor:pointer; padding:5px 0; color:var(--muted);
   font-size:10px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
   transition:color 0.2s; position:relative;
+  touch-action:manipulation;
+  user-select:none;
 }
 .nav-item svg { width:22px; height:22px; transition:transform 0.2s; }
 .nav-item.active     { color:var(--accent); }
@@ -216,7 +222,7 @@ body {
 }
 
 /* ── INNER SCREENS ── */
-.inner-screen { display:none; flex-direction:column; flex:1; padding:0 0 100px; animation:fadeIn 0.28s ease forwards; }
+.inner-screen { display:none; flex-direction:column; padding:0 0 110px; animation:fadeIn 0.28s ease forwards; min-height:min-content; }
 .inner-screen.show { display:flex; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
 
@@ -294,16 +300,18 @@ body {
 .modes-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 24px; }
 .mode-card {
   background:var(--surface); border:1.5px solid var(--border);
-  border-radius:var(--radius); padding:20px 16px; cursor:pointer;
+  border-radius:var(--radius); padding:16px 14px; cursor:pointer;
   transition:border-color 0.2s, background 0.2s, transform 0.15s;
-  display:flex; flex-direction:column; gap:10px; position:relative;
+  display:flex; flex-direction:column; gap:8px; position:relative;
+  /* prevent text from busting out */
+  min-width:0; overflow:hidden;
 }
 .mode-card:active  { transform:scale(0.96); }
 .mode-card.selected { border-color:var(--accent); background:var(--accent-light); }
-.mode-icon { font-size:26px; }
-.mode-name { font-size:14px; font-weight:600; }
-.mode-desc { font-size:12px; color:var(--muted); line-height:1.4; }
-.mode-dot  { position:absolute; top:12px; right:12px; width:8px; height:8px; border-radius:50%; background:var(--accent); opacity:0; transition:opacity 0.2s; }
+.mode-icon { font-size:24px; line-height:1; }
+.mode-name { font-size:13px; font-weight:600; }
+.mode-desc { font-size:11px; color:var(--muted); line-height:1.4; }
+.mode-dot  { position:absolute; top:10px; right:10px; width:7px; height:7px; border-radius:50%; background:var(--accent); opacity:0; transition:opacity 0.2s; }
 .mode-card.selected .mode-dot { opacity:1; }
 
 .sliders { padding:24px 24px 0; }
@@ -438,7 +446,6 @@ canvas.graph { width:100%; height:80px; display:block; }
         <div class="hey">Good morning</div>
         <div class="name">Dashboard</div>
       </div>
-      <div class="badge"><div class="badge-dot"></div>Active</div>
     </div>
     <div class="stats-grid">
       <div class="stat-card green">
