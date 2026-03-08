@@ -1,892 +1,338 @@
+<!--
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║    ███████╗██╗     ███████╗███████╗██╗   ██╗███████╗         ║
+║    ██╔════╝██║     ██╔════╝██╔════╝██║   ██║██╔════╝         ║
+║    ███████╗██║     █████╗  █████╗  ██║   ██║█████╗           ║
+║    ╚════██║██║     ██╔══╝  ██╔══╝  ╚██╗ ██╔╝██╔══╝           ║
+║    ███████║███████╗███████╗███████╗ ╚████╔╝ ███████╗         ║
+║    ╚══════╝╚══════╝╚══════╝╚══════╝  ╚═══╝  ╚══════╝         ║
+║                                                               ║
+║    Bionic Arm Companion App  ·  HOSA 2026                     ║
+║    Made by Kevin                                              ║
+║    Protected under DMCA Copyright Law                         ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Sleeve</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:           #f6f9f6;
-  --surface:      #ffffff;
-  --surface2:     #edf4ed;
-  --border:       #deeade;
-  --accent:       #3d9e68;
-  --accent-light: #e6f5ec;
-  --accent-mid:   #5ec98a;
-  --text:         #1c2e22;
-  --muted:        #7fa08a;
-  --danger:       #d95f5f;
-  --warn:         #d9943a;
-  --radius:       20px;
-  --radius-sm:    12px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-button, [onclick] { touch-action:manipulation; }
-
-html, body { height:100%; width:100%; }
-
-body {
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg); color:var(--text);
-  min-height:100vh; overflow-x:hidden;
-}
-
-.app-shell {
-  width:100%; min-height:100vh; position:relative;
-}
-
-/* ── SCREENS ── */
-.screen {
-  position:fixed; inset:0;
-  display:flex; flex-direction:column;
-  opacity:0; pointer-events:none;
-  transition:opacity 0.35s ease, transform 0.35s ease;
-  transform:translateY(16px);
-  overflow:hidden;
-  background:var(--bg);
-}
-.screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
-.screen.exit   { opacity:0; transform:translateY(-10px); }
-
-/* Main screen needs to fill and let inner-screen scroll */
-#screen-main {
-  display:flex; flex-direction:column;
-}
-
-/* ── NAV ── */
-.nav-bar {
-  position:fixed; bottom:0; left:0; right:0;
-  background:rgba(255,255,255,0.94); backdrop-filter:blur(24px);
-  border-top:1px solid var(--border); display:flex;
-  padding:10px 0 calc(10px + env(safe-area-inset-bottom)); z-index:100;
-}
-
-/* ── RESPONSIVE LAYOUT ── */
-/* Phone */
-@media (max-width:599px) {
-  .page-header      { padding:52px 20px 18px; }
-  .home-header      { padding:52px 20px 20px; }
-  .stats-grid       { padding:0 20px; gap:12px; margin-bottom:14px; }
-  .battery-card     { margin:0 20px 14px; }
-  .active-mode-card { margin:0 20px; }
-  .section-label    { padding:0 20px; }
-  .modes-grid       { padding:0 20px; gap:10px; }
-  .sliders          { padding:20px 20px 0; }
-  .apply-btn        { margin:8px 20px 0; width:calc(100% - 40px); }
-  .muscle-grid      { padding:0 20px; gap:10px; }
-  .graph-card       { margin:0 20px 12px; }
-  .session-row      { padding:0 20px; }
-  .alerts-top       { padding:0 20px; }
-  .alerts-list      { padding:0 20px; gap:10px; }
-}
-
-/* iPad / tablet — 2 column content, bigger everything */
-@media (min-width:600px) {
-  :root { --radius:24px; --radius-sm:16px; }
-
-  .page-header      { padding:64px 40px 22px; }
-  .home-header      { padding:64px 40px 28px; }
-
-  .stats-grid       { padding:0 40px; gap:20px; margin-bottom:20px;
-                      grid-template-columns:repeat(4,1fr); }
-  .battery-card     { margin:0 40px 20px; padding:22px 24px; }
-  .active-mode-card { margin:0 40px; padding:22px 24px; }
-  .section-label    { padding:0 40px; font-size:12px; }
-
-  .modes-grid       { padding:0 40px; gap:16px;
-                      grid-template-columns:repeat(3,1fr); }
-  .sliders          { padding:32px 40px 0; }
-  .apply-btn        { margin:12px 40px 0; width:calc(100% - 80px); padding:17px; font-size:16px; }
-
-  .muscle-grid      { padding:0 40px; gap:16px;
-                      grid-template-columns:repeat(4,1fr); }
-  .graph-card       { margin:0 40px 18px; padding:24px; }
-  .session-row      { padding:0 40px; gap:16px; }
-  .alerts-top       { padding:0 40px; }
-  .alerts-list      { padding:0 40px; gap:12px; }
-
-  .mode-icon        { font-size:30px; }
-  .mode-name        { font-size:15px; }
-  .s-val            { font-size:32px; }
-  .batt-pct         { font-size:18px; }
-  .amn              { font-size:18px; }
-  .mc-val           { font-size:26px; }
-
-  /* Loading screen bigger text on iPad */
-  .load-wordmark    { font-size:40px; letter-spacing:12px; }
-}
-
-#screen-loading, #screen-pair {
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-}
-
-/* ══════════════════════════════
-   LOADING SCREEN
-══════════════════════════════ */
-#screen-loading {
-  background:var(--surface);
-  align-items:center; justify-content:center; gap:28px;
-}
-.load-wordmark {
-  font-family:'Syne',sans-serif;
-  font-size:30px; font-weight:800;
-  letter-spacing:8px; color:var(--text);
-}
-.load-dots { display:flex; gap:8px; }
-.load-dot  { width:6px; height:6px; border-radius:50%; background:var(--accent-light); }
-.load-dot:nth-child(1){ animation:dotPop 1.4s ease-in-out 0s infinite; }
-.load-dot:nth-child(2){ animation:dotPop 1.4s ease-in-out 0.2s infinite; }
-.load-dot:nth-child(3){ animation:dotPop 1.4s ease-in-out 0.4s infinite; }
-@keyframes dotPop {
-  0%,100%{ background:var(--accent-light); transform:scale(1); }
-  40%    { background:var(--accent); transform:scale(1.5); }
-}
-
-/* ══════════════════════════════
-   PAIR SCREEN
-══════════════════════════════ */
-#screen-pair {
-  background:var(--surface);
-  align-items:center; justify-content:center; padding:48px 28px; gap:0;
-}
-.pair-top { text-align:center; margin-bottom:48px; }
-.pair-logo-box {
-  width:72px; height:72px; border-radius:20px;
-  background:var(--accent-light);
-  margin:0 auto 18px;
-  display:flex; align-items:center; justify-content:center; overflow:hidden;
-}
-.pair-logo-box img { width:100%; height:100%; object-fit:contain; padding:10px; }
-.pair-logo-box svg { width:42px; height:42px; }
-.pair-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; letter-spacing:2px; margin-bottom:4px; }
-.pair-sub   { font-size:13px; color:var(--muted); }
-
-.pair-ring-wrap {
-  position:relative; width:210px; height:210px;
-  margin:0 auto 48px;
-  display:flex; align-items:center; justify-content:center;
-}
-.pair-ring { position:absolute; border-radius:50%; border:1.5px solid var(--accent); opacity:0; }
-.r1{ width:210px;height:210px;animation:ripple 2.6s ease-out 0s infinite; }
-.r2{ width:210px;height:210px;animation:ripple 2.6s ease-out 0.87s infinite; }
-.r3{ width:210px;height:210px;animation:ripple 2.6s ease-out 1.74s infinite; }
-.pairing.r1{ animation:rippleFast 1.1s ease-out 0s infinite; }
-.pairing.r2{ animation:rippleFast 1.1s ease-out 0.37s infinite; }
-.pairing.r3{ animation:rippleFast 1.1s ease-out 0.74s infinite; }
-@keyframes ripple     { 0%{transform:scale(0.3);opacity:0.5;} 100%{transform:scale(1);opacity:0;} }
-@keyframes rippleFast { 0%{transform:scale(0.2);opacity:0.8;} 100%{transform:scale(1.2);opacity:0;} }
-
-.pair-btn-circle {
-  width:108px; height:108px; border-radius:50%;
-  background:var(--accent); box-shadow:0 8px 28px rgba(61,158,104,0.35);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
-  cursor:pointer; z-index:2; transition:transform 0.2s, box-shadow 0.2s;
-  color:#fff; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
-}
-.pair-btn-circle:active { transform:scale(0.93); box-shadow:0 4px 14px rgba(61,158,104,0.2); }
-.pair-btn-circle svg { width:26px; height:26px; }
-
-.pair-status { font-size:13px; color:var(--muted); text-align:center; min-height:20px; transition:color 0.3s; }
-.pair-status.searching { color:var(--accent); }
-.pair-status.paired    { color:var(--accent); }
-
-.pair-found-card {
-  width:100%; background:var(--bg); border:1.5px solid var(--border);
-  border-radius:var(--radius); padding:18px 20px;
-  display:flex; align-items:center; justify-content:space-between;
-  opacity:0; transform:translateY(12px);
-  transition:opacity 0.4s, transform 0.4s; margin-top:28px;
-}
-.pair-found-card.visible { opacity:1; transform:translateY(0); }
-.pair-device-name { font-size:15px; font-weight:600; margin-bottom:3px; }
-.pair-device-id   { font-size:12px; color:var(--muted); }
-.pair-connect-btn {
-  background:var(--accent); color:#fff; border:none; border-radius:10px;
-  padding:10px 18px; font-size:13px; font-weight:700;
-  cursor:pointer; font-family:inherit; transition:opacity 0.15s, transform 0.15s;
-}
-.pair-connect-btn:active { opacity:0.82; transform:scale(0.95); }
-
-/* ── NAV ITEMS ── */
-.nav-item {
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-  cursor:pointer; padding:5px 0; color:var(--muted);
-  font-size:10px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
-  transition:color 0.2s; position:relative;
-  touch-action:manipulation;
-  user-select:none;
-}
-.nav-item svg { width:22px; height:22px; transition:transform 0.2s; }
-.nav-item.active     { color:var(--accent); }
-.nav-item.active svg { transform:translateY(-1px); }
-.nav-dot {
-  width:5px; height:5px; border-radius:50%; background:var(--danger);
-  position:absolute; top:4px; right:calc(50% - 20px); border:1.5px solid white;
-}
-
-/* ── INNER SCREENS ── */
-.inner-screen {
-  display:none; flex-direction:column;
-  position:absolute; inset:0;
-  bottom:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  padding-bottom:80px;
-  animation:fadeIn 0.28s ease forwards;
-  min-height:min-content;
-}
-.inner-screen.show { display:flex; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
-
-.page-header { padding:52px 24px 18px; }
-.page-title  { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; }
-.page-sub    { font-size:13px; color:var(--muted); margin-top:3px; }
-
-/* ── HOME ── */
-.home-header {
-  padding:52px 24px 22px;
-  display:flex; justify-content:space-between; align-items:flex-start;
-}
-.hey  { font-size:13px; color:var(--muted); margin-bottom:3px; }
-.name { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; }
-.badge {
-  background:var(--accent-light); color:var(--accent);
-  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
-  padding:6px 12px; border-radius:99px; display:flex; align-items:center; gap:6px;
-}
-.badge-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:bdot 2s ease infinite; }
-@keyframes bdot{0%{box-shadow:0 0 0 0 rgba(61,158,104,0.4);}70%{box-shadow:0 0 0 6px rgba(61,158,104,0);}100%{box-shadow:0 0 0 0 rgba(61,158,104,0);}}
-
-.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:0 24px; margin-bottom:16px; }
-.stat-card {
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:20px 18px;
-  display:flex; flex-direction:column; gap:6px;
-}
-.stat-card.green { background:var(--accent); border-color:var(--accent); }
-.stat-card.green .s-lbl,
-.stat-card.green .s-val { color:#fff; }
-.stat-card.green .s-lbl { opacity:0.75; }
-.s-lbl  { font-size:12px; color:var(--muted); font-weight:500; }
-.s-val  { font-size:28px; font-weight:700; line-height:1; }
-.s-unit { font-size:13px; font-weight:500; opacity:0.65; }
-
-.battery-card {
-  margin:0 24px 16px; background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:18px 20px;
-  display:flex; align-items:center; gap:16px;
-}
-.batt-icon {
-  width:44px; height:44px; border-radius:12px; background:var(--accent-light);
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-}
-.batt-icon svg { width:22px; height:22px; }
-.batt-info  { flex:1; }
-.batt-label { font-size:12px; color:var(--muted); margin-bottom:7px; }
-.batt-bar   { height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; }
-.batt-fill  { height:100%; width:72%; background:linear-gradient(90deg,var(--accent-mid),var(--accent)); border-radius:99px; }
-.batt-pct   { font-size:16px; font-weight:700; color:var(--accent); flex-shrink:0; }
-
-.section-label { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); padding:0 24px; margin-bottom:12px; }
-
-.active-mode-card {
-  margin:0 24px; background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:18px 20px;
-  display:flex; align-items:center; gap:16px;
-}
-.mode-icon-sm {
-  width:48px; height:48px; border-radius:14px; background:var(--accent-light);
-  display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;
-}
-.active-mode-info { flex:1; }
-.aml { font-size:12px; color:var(--muted); margin-bottom:2px; }
-.amn { font-size:16px; font-weight:600; }
-.change-btn {
-  font-size:12px; color:var(--accent); background:var(--accent-light);
-  border:none; border-radius:9px; padding:8px 14px;
-  font-family:inherit; font-weight:700; cursor:pointer; transition:opacity 0.15s;
-}
-.change-btn:active { opacity:0.7; }
-
-/* ── MODES ── */
-.modes-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 24px; }
-.mode-card {
-  background:var(--surface); border:1.5px solid var(--border);
-  border-radius:var(--radius); padding:16px 14px; cursor:pointer;
-  transition:border-color 0.2s, background 0.2s, transform 0.15s;
-  display:flex; flex-direction:column; gap:8px; position:relative;
-  /* prevent text from busting out */
-  min-width:0; overflow:hidden;
-}
-.mode-card:active  { transform:scale(0.96); }
-.mode-card.selected { border-color:var(--accent); background:var(--accent-light); }
-.mode-icon { font-size:24px; line-height:1; }
-.mode-name { font-size:13px; font-weight:600; }
-.mode-desc { font-size:11px; color:var(--muted); line-height:1.4; }
-.mode-dot  { position:absolute; top:10px; right:10px; width:7px; height:7px; border-radius:50%; background:var(--accent); opacity:0; transition:opacity 0.2s; }
-.mode-card.selected .mode-dot { opacity:1; }
-
-.sliders { padding:24px 24px 0; }
-.slider-row { margin-bottom:20px; }
-.slider-top { display:flex; justify-content:space-between; margin-bottom:10px; }
-.slider-name { font-size:14px; font-weight:600; }
-.slider-val  { font-size:12px; color:var(--accent); font-weight:700; background:var(--accent-light); padding:3px 10px; border-radius:99px; }
-input[type=range] { -webkit-appearance:none; width:100%; height:4px; background:var(--surface2); border-radius:99px; outline:none; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--accent); box-shadow:0 2px 10px rgba(61,158,104,0.35); cursor:pointer; transition:transform 0.1s; }
-input[type=range]:active::-webkit-slider-thumb { transform:scale(1.18); }
-.apply-btn {
-  margin:8px 24px 0; background:var(--accent); color:#fff; border:none;
-  border-radius:var(--radius-sm); padding:15px; font-size:15px; font-weight:700;
-  cursor:pointer; font-family:inherit; width:calc(100% - 48px);
-  transition:opacity 0.15s, transform 0.15s;
-}
-.apply-btn:active { opacity:0.85; transform:scale(0.98); }
-
-/* ── MUSCLE ── */
-.muscle-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 24px; margin-bottom:20px; }
-.muscle-chip { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; gap:7px; }
-.mc-name { font-size:12px; color:var(--muted); }
-.mc-val  { font-size:22px; font-weight:700; }
-.mc-high { color:var(--danger); }
-.mc-med  { color:var(--warn); }
-.mc-low  { color:var(--accent); }
-.mc-bar  { height:4px; background:var(--surface2); border-radius:99px; overflow:hidden; }
-.mc-fill { height:100%; border-radius:99px; transition:width 1.2s ease; }
-.mf-high { background:var(--danger); }
-.mf-med  { background:var(--warn); }
-.mf-low  { background:var(--accent); }
-.graph-card { margin:0 24px 14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
-.graph-title { font-size:13px; font-weight:600; margin-bottom:16px; }
-canvas.graph { width:100%; height:80px; display:block; }
-.graph-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:8px; }
-.session-row { padding:0 24px; margin-bottom:24px; display:flex; gap:12px; }
-.session-stat { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; }
-.sv { font-size:19px; font-weight:700; color:var(--accent); }
-.sl { font-size:11px; color:var(--muted); margin-top:2px; }
-
-/* ── ALERTS ── */
-.alerts-top { display:flex; justify-content:space-between; align-items:center; padding:0 24px; margin-bottom:16px; }
-.clear-btn { font-size:12px; color:var(--accent); background:none; border:none; cursor:pointer; font-family:inherit; font-weight:700; }
-.alerts-list { display:flex; flex-direction:column; gap:10px; padding:0 24px; }
-.alert-card {
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:16px 18px;
-  display:flex; align-items:flex-start; gap:14px;
-  position:relative; overflow:hidden;
-  animation:aIn 0.3s ease forwards; opacity:0;
-}
-.alert-card:nth-child(1){animation-delay:0s;}.alert-card:nth-child(2){animation-delay:0.06s;}
-.alert-card:nth-child(3){animation-delay:0.12s;}.alert-card:nth-child(4){animation-delay:0.18s;}
-.alert-card:nth-child(5){animation-delay:0.24s;}
-@keyframes aIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.a-stripe { position:absolute; left:0; top:0; bottom:0; width:3px; }
-.a-stripe.danger{background:var(--danger);}.a-stripe.warn{background:var(--warn);}
-.a-stripe.info{background:var(--accent);}.a-stripe.ok{background:var(--accent);}
-.a-icon  { font-size:20px; flex-shrink:0; margin-top:1px; }
-.a-body  { flex:1; }
-.a-title { font-size:14px; font-weight:600; margin-bottom:3px; }
-.a-desc  { font-size:12px; color:var(--muted); line-height:1.45; }
-.a-time  { font-size:11px; color:var(--muted); margin-top:5px; }
-.a-dot   { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:4px; }
-.a-dot.gone { background:transparent; }
-
-/* ── TOAST ── */
-.toast {
-  position:fixed; bottom:88px; left:50%; transform:translateX(-50%) translateY(8px);
-  background:var(--text); color:#fff; border-radius:99px; padding:10px 22px;
-  font-size:13px; font-weight:500; white-space:nowrap;
-  opacity:0; transition:opacity 0.22s, transform 0.22s; z-index:200;
-}
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sleeve</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app-shell">
 
-<!-- LOADING -->
-<div class="screen active" id="screen-loading">
-  <div class="load-wordmark">SLEEVE</div>
-  <div class="load-dots">
-    <div class="load-dot"></div>
-    <div class="load-dot"></div>
-    <div class="load-dot"></div>
-  </div>
-</div>
-
-<!-- PAIR -->
-<div class="screen" id="screen-pair">
-  <div class="pair-top">
-    <div class="pair-logo-box" id="pairLogoBox">
-      <svg viewBox="0 0 54 54" fill="none">
-        <path d="M27 7C16.51 7 8 15.51 8 26s8.51 19 19 19 19-8.51 19-19S37.49 7 27 7Z" stroke="#3d9e68" stroke-width="2.2"/>
-        <path d="M19 26c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8" stroke="#5ec98a" stroke-width="2.8" stroke-linecap="round"/>
-        <circle cx="27" cy="26" r="3.2" fill="#3d9e68"/>
-      </svg>
-    </div>
-    <div class="pair-title">SLEEVE</div>
-    <div class="pair-sub">No device connected</div>
-  </div>
-  <div class="pair-ring-wrap">
-    <div class="pair-ring r1"></div>
-    <div class="pair-ring r2"></div>
-    <div class="pair-ring r3"></div>
-    <div class="pair-btn-circle" onclick="startPairing()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M8.56 2.9A7 7 0 0 1 19 9v1l2 2-2 2v1a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-1L3 12l2-2V9a7 7 0 0 1 3.56-6.1z"/>
-        <circle cx="12" cy="12" r="2" fill="currentColor"/>
-      </svg>
-      Pair
+  <!-- ─── LOADING SCREEN ─── -->
+  <div class="screen active" id="screen-loading">
+    <div class="load-wordmark">SLEEVE</div>
+    <div class="load-dots">
+      <div class="load-dot"></div>
+      <div class="load-dot"></div>
+      <div class="load-dot"></div>
     </div>
   </div>
-  <div class="pair-status" id="pairStatus">Tap to scan for device</div>
-  <div class="pair-found-card" id="pairFoundCard">
-    <div>
-      <div class="pair-device-name">Sleeve v2 — Right</div>
-      <div class="pair-device-id">SLV-2024-R · BLE 5.0</div>
+
+  <!-- ─── PAIR SCREEN ─── -->
+  <div class="screen" id="screen-pair">
+    <div class="pair-top">
+      <div class="pair-logo-box" id="pairLogoBox">
+        <svg viewBox="0 0 54 54" fill="none">
+          <path d="M27 7C16.51 7 8 15.51 8 26s8.51 19 19 19 19-8.51 19-19S37.49 7 27 7Z" stroke="#3d9e68" stroke-width="2.2"/>
+          <path d="M19 26c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8" stroke="#5ec98a" stroke-width="2.8" stroke-linecap="round"/>
+          <circle cx="27" cy="26" r="3.2" fill="#3d9e68"/>
+        </svg>
+      </div>
+      <div class="pair-title">SLEEVE</div>
+      <div class="pair-sub">No device connected</div>
     </div>
-    <button class="pair-connect-btn" onclick="connectDevice()">Connect</button>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div class="screen" id="screen-main">
-
-  <!-- HOME -->
-  <div class="inner-screen show" id="tab-home">
-    <div class="home-header">
+    <div class="pair-ring-wrap">
+      <div class="pair-ring r1"></div>
+      <div class="pair-ring r2"></div>
+      <div class="pair-ring r3"></div>
+      <div class="pair-btn-circle" onclick="startPairing()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M8.56 2.9A7 7 0 0 1 19 9v1l2 2-2 2v1a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-1L3 12l2-2V9a7 7 0 0 1 3.56-6.1z"/>
+          <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        </svg>
+        Pair
+      </div>
+    </div>
+    <div class="pair-status" id="pairStatus">Tap to scan for device</div>
+    <div class="pair-found-card" id="pairFoundCard">
       <div>
+        <div class="pair-device-name">Sleeve v2 — Right</div>
+        <div class="pair-device-id">SLV-2024-R · BLE 5.0</div>
+      </div>
+      <button class="pair-connect-btn" onclick="connectDevice()">Connect</button>
+    </div>
+  </div>
+
+  <!-- ─── MAIN APP ─── -->
+  <div class="screen" id="screen-main">
+
+    <!-- HOME TAB -->
+    <div class="tab-page show" id="tab-home">
+      <div class="home-header">
         <div class="hey">Good morning</div>
         <div class="name">Dashboard</div>
       </div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card green">
-        <div class="s-lbl">Session Time</div>
-        <div class="s-val">2.4<span class="s-unit">h</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="s-lbl">Gestures</div>
-        <div class="s-val">14</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-lbl">Accuracy</div>
-        <div class="s-val">92<span class="s-unit">%</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="s-lbl">Signal Avg</div>
-        <div class="s-val">48<span class="s-unit" style="font-size:11px">µV</span></div>
-      </div>
-    </div>
-    <div class="battery-card">
-      <div class="batt-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#3d9e68" stroke-width="1.8">
-          <rect x="2" y="7" width="18" height="10" rx="2"/>
-          <path d="M22 11v2" stroke-linecap="round" stroke-width="2.2" stroke="#3d9e68"/>
-          <rect x="4" y="9" width="11" height="6" rx="1" fill="#3d9e68" stroke="none"/>
-        </svg>
-      </div>
-      <div class="batt-info">
-        <div class="batt-label">Battery · ~4h remaining</div>
-        <div class="batt-bar"><div class="batt-fill"></div></div>
-      </div>
-      <div class="batt-pct">72%</div>
-    </div>
-    <div class="section-label">Active Mode</div>
-    <div class="active-mode-card">
-      <div class="mode-icon-sm" id="homeModeIcon">✍️</div>
-      <div class="active-mode-info">
-        <div class="aml">Currently running</div>
-        <div class="amn" id="homeModeText">Writing Mode</div>
-      </div>
-      <button class="change-btn" onclick="goTab('modes')">Change</button>
-    </div>
-  </div>
-
-  <!-- MODES -->
-  <div class="inner-screen" id="tab-modes">
-    <div class="page-header">
-      <div class="page-title">Modes</div>
-      <div class="page-sub">Select an activity preset</div>
-    </div>
-    <div class="modes-grid">
-      <div class="mode-card selected" onclick="selectMode(this,'✍️','Writing Mode')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">✍️</div>
-        <div class="mode-name">Writing</div>
-        <div class="mode-desc">Fine-motor pen grip control</div>
-      </div>
-      <div class="mode-card" onclick="selectMode(this,'🍴','Eating Mode')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">🍴</div>
-        <div class="mode-name">Eating</div>
-        <div class="mode-desc">Adaptive utensil grip</div>
-      </div>
-      <div class="mode-card" onclick="selectMode(this,'⌨️','Typing Mode')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">⌨️</div>
-        <div class="mode-name">Typing</div>
-        <div class="mode-desc">Low-resistance finger movement</div>
-      </div>
-      <div class="mode-card" onclick="selectMode(this,'🤝','Power Grip')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">🤝</div>
-        <div class="mode-name">Power Grip</div>
-        <div class="mode-desc">High-force object hold</div>
-      </div>
-      <div class="mode-card" onclick="selectMode(this,'😌','Rest Mode')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">😌</div>
-        <div class="mode-name">Rest</div>
-        <div class="mode-desc">Relaxed, minimal tension</div>
-      </div>
-      <div class="mode-card" onclick="selectMode(this,'💪','Therapy Mode')">
-        <div class="mode-dot"></div>
-        <div class="mode-icon">💪</div>
-        <div class="mode-name">Therapy</div>
-        <div class="mode-desc">Guided rehab patterns</div>
-      </div>
-    </div>
-    <div class="sliders">
-      <div class="slider-row">
-        <div class="slider-top">
-          <span class="slider-name">Grip Intensity</span>
-          <span class="slider-val" id="gripVal">60%</span>
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="s-lbl">Session Time</div>
+          <div class="s-val">2.4<span class="s-unit">h</span></div>
         </div>
-        <input type="range" min="0" max="100" value="60" oninput="document.getElementById('gripVal').textContent=this.value+'%'">
-      </div>
-      <div class="slider-row">
-        <div class="slider-top">
-          <span class="slider-name">Response Speed</span>
-          <span class="slider-val" id="speedVal">Medium</span>
+        <div class="stat-card">
+          <div class="s-lbl">Gestures</div>
+          <div class="s-val">14</div>
         </div>
-        <input type="range" min="1" max="3" value="2" oninput="updateSpeed(this.value)">
-      </div>
-    </div>
-    <button class="apply-btn" onclick="applyMode()">Apply Mode</button>
-  </div>
-
-  <!-- MUSCLE MONITOR -->
-  <div class="inner-screen" id="tab-muscle">
-    <div class="page-header">
-      <div class="page-title">Muscle Monitor</div>
-      <div class="page-sub">Real-time EMG analysis</div>
-    </div>
-    <div class="muscle-grid">
-      <div class="muscle-chip">
-        <div class="mc-name">Flexor</div>
-        <div class="mc-val mc-med" id="mv1">68 µV</div>
-        <div class="mc-bar"><div class="mc-fill mf-med" id="mb1" style="width:68%"></div></div>
-      </div>
-      <div class="muscle-chip">
-        <div class="mc-name">Extensor</div>
-        <div class="mc-val mc-low" id="mv2">42 µV</div>
-        <div class="mc-bar"><div class="mc-fill mf-low" id="mb2" style="width:42%"></div></div>
-      </div>
-      <div class="muscle-chip">
-        <div class="mc-name">Bicep</div>
-        <div class="mc-val mc-high" id="mv3">81 µV</div>
-        <div class="mc-bar"><div class="mc-fill mf-high" id="mb3" style="width:81%"></div></div>
-      </div>
-      <div class="muscle-chip">
-        <div class="mc-name">Tricep</div>
-        <div class="mc-val mc-low" id="mv4">29 µV</div>
-        <div class="mc-bar"><div class="mc-fill mf-low" id="mb4" style="width:29%"></div></div>
-      </div>
-    </div>
-    <div class="section-label" style="padding:0 24px;margin-bottom:12px">Waveform</div>
-    <div class="graph-card">
-      <div class="graph-title">Flexor / Extensor</div>
-      <canvas class="graph" id="muscleGraph" height="90"></canvas>
-      <div class="graph-labels"><span>Flexor</span><span>Extensor</span></div>
-    </div>
-    <div class="graph-card">
-      <div class="graph-title">Bicep Activation</div>
-      <canvas class="graph" id="bicepGraph" height="90"></canvas>
-      <div class="graph-labels"><span>10s ago</span><span>Now</span></div>
-    </div>
-    <div class="session-row">
-      <div class="session-stat"><div class="sv">48 µV</div><div class="sl">Avg Signal</div></div>
-      <div class="session-stat"><div class="sv">81 µV</div><div class="sl">Peak Today</div></div>
-      <div class="session-stat"><div class="sv">2.4h</div><div class="sl">Active Time</div></div>
-    </div>
-  </div>
-
-  <!-- ALERTS -->
-  <div class="inner-screen" id="tab-alerts">
-    <div class="page-header">
-      <div class="page-title">Notifications</div>
-    </div>
-    <div class="alerts-top">
-      <div class="section-label" style="padding:0;margin:0">Today</div>
-      <button class="clear-btn" onclick="clearAlerts()">Clear all</button>
-    </div>
-    <div class="alerts-list" id="alertsList">
-      <div class="alert-card">
-        <div class="a-stripe warn"></div>
-        <div class="a-icon">🔋</div>
-        <div class="a-body">
-          <div class="a-title">Battery at 72%</div>
-          <div class="a-desc">Consider charging before extended use. ~4h remaining.</div>
-          <div class="a-time">9:14 AM</div>
+        <div class="stat-card">
+          <div class="s-lbl">Accuracy</div>
+          <div class="s-val">92<span class="s-unit">%</span></div>
         </div>
-        <div class="a-dot"></div>
-      </div>
-      <div class="alert-card">
-        <div class="a-stripe ok"></div>
-        <div class="a-icon">✅</div>
-        <div class="a-body">
-          <div class="a-title">Calibration Complete</div>
-          <div class="a-desc">Muscle mapping updated. Accuracy improved to 92%.</div>
-          <div class="a-time">8:51 AM</div>
+        <div class="stat-card">
+          <div class="s-lbl">Signal Avg</div>
+          <div class="s-val">48<span class="s-unit" style="font-size:11px">µV</span></div>
         </div>
-        <div class="a-dot gone"></div>
       </div>
-      <div class="alert-card">
-        <div class="a-stripe info"></div>
-        <div class="a-icon">📡</div>
-        <div class="a-body">
-          <div class="a-title">Device Paired</div>
-          <div class="a-desc">Sleeve v2 — Right connected via BLE 5.0.</div>
-          <div class="a-time">8:43 AM</div>
+      <div class="battery-card">
+        <div class="batt-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3d9e68" stroke-width="1.8">
+            <rect x="2" y="7" width="18" height="10" rx="2"/>
+            <path d="M22 11v2" stroke-linecap="round" stroke-width="2.2"/>
+            <rect x="4" y="9" width="11" height="6" rx="1" fill="#3d9e68" stroke="none"/>
+          </svg>
         </div>
-        <div class="a-dot gone"></div>
-      </div>
-      <div class="alert-card">
-        <div class="a-stripe danger"></div>
-        <div class="a-icon">⚠️</div>
-        <div class="a-body">
-          <div class="a-title">High Muscle Tension</div>
-          <div class="a-desc">Bicep activity exceeded threshold. Rest recommended.</div>
-          <div class="a-time">Yesterday · 6:22 PM</div>
+        <div class="batt-info">
+          <div class="batt-label">Battery · ~4h remaining</div>
+          <div class="batt-bar"><div class="batt-fill"></div></div>
         </div>
-        <div class="a-dot gone"></div>
+        <div class="batt-pct">72%</div>
       </div>
-      <div class="alert-card">
-        <div class="a-stripe warn"></div>
-        <div class="a-icon">🔁</div>
-        <div class="a-body">
-          <div class="a-title">Firmware Update Available</div>
-          <div class="a-desc">v2.1.4 — stability and new therapy patterns.</div>
-          <div class="a-time">Yesterday · 2:00 PM</div>
+      <div class="section-label">Active Mode</div>
+      <div class="active-mode-card">
+        <div class="mode-icon-sm" id="homeModeIcon">✍️</div>
+        <div class="active-mode-info">
+          <div class="aml">Currently running</div>
+          <div class="amn" id="homeModeText">Writing Mode</div>
         </div>
-        <div class="a-dot gone"></div>
+        <button class="change-btn" onclick="goTab('modes')">Change</button>
       </div>
     </div>
-  </div>
 
-  <!-- NAV -->
-  <nav class="nav-bar">
-    <div class="nav-item active" id="nav-home" onclick="goTab('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-        <path d="M9 21V12h6v9"/>
-      </svg>Home
+    <!-- MODES TAB -->
+    <!-- To add a mode: copy any .mode-card block and change the emoji, name, desc -->
+    <div class="tab-page" id="tab-modes">
+      <div class="page-header">
+        <div class="page-title">Modes</div>
+        <div class="page-sub">Select an activity preset</div>
+      </div>
+      <div class="modes-grid">
+        <div class="mode-card selected" onclick="selectMode(this,'✍️','Writing Mode')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">✍️</div>
+          <div class="mode-name">Writing</div>
+          <div class="mode-desc">Fine-motor pen grip</div>
+        </div>
+        <div class="mode-card" onclick="selectMode(this,'🍴','Eating Mode')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">🍴</div>
+          <div class="mode-name">Eating</div>
+          <div class="mode-desc">Adaptive utensil grip</div>
+        </div>
+        <div class="mode-card" onclick="selectMode(this,'⌨️','Typing Mode')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">⌨️</div>
+          <div class="mode-name">Typing</div>
+          <div class="mode-desc">Low-resistance fingers</div>
+        </div>
+        <div class="mode-card" onclick="selectMode(this,'🤝','Power Grip')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">🤝</div>
+          <div class="mode-name">Power Grip</div>
+          <div class="mode-desc">High-force object hold</div>
+        </div>
+        <div class="mode-card" onclick="selectMode(this,'😌','Rest Mode')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">😌</div>
+          <div class="mode-name">Rest</div>
+          <div class="mode-desc">Relaxed, minimal tension</div>
+        </div>
+        <div class="mode-card" onclick="selectMode(this,'💪','Therapy Mode')">
+          <div class="mode-dot"></div>
+          <div class="mode-icon">💪</div>
+          <div class="mode-name">Therapy</div>
+          <div class="mode-desc">Guided rehab patterns</div>
+        </div>
+      </div>
+      <!-- Sliders: change value= for default, min= / max= for range -->
+      <div class="sliders">
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Grip Intensity</span>
+            <span class="slider-val" id="gripVal">60%</span>
+          </div>
+          <input type="range" min="0" max="100" value="60"
+            oninput="document.getElementById('gripVal').textContent=this.value+'%'">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Response Speed</span>
+            <span class="slider-val" id="speedVal">Medium</span>
+          </div>
+          <input type="range" min="1" max="3" value="2" oninput="updateSpeed(this.value)">
+        </div>
+      </div>
+      <button class="apply-btn" onclick="applyMode()">Apply Mode</button>
     </div>
-    <div class="nav-item" id="nav-modes" onclick="goTab('modes')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-      </svg>Modes
+
+    <!-- MONITOR TAB -->
+    <div class="tab-page" id="tab-muscle">
+      <div class="page-header">
+        <div class="page-title">Muscle Monitor</div>
+        <div class="page-sub">Real-time EMG analysis</div>
+      </div>
+      <!-- Values update automatically every 2s via app.js -->
+      <div class="muscle-grid">
+        <div class="muscle-chip">
+          <div class="mc-name">Flexor</div>
+          <div class="mc-val mc-med" id="mv1">68 µV</div>
+          <div class="mc-bar"><div class="mc-fill mf-med" id="mb1" style="width:68%"></div></div>
+        </div>
+        <div class="muscle-chip">
+          <div class="mc-name">Extensor</div>
+          <div class="mc-val mc-low" id="mv2">42 µV</div>
+          <div class="mc-bar"><div class="mc-fill mf-low" id="mb2" style="width:42%"></div></div>
+        </div>
+        <div class="muscle-chip">
+          <div class="mc-name">Bicep</div>
+          <div class="mc-val mc-high" id="mv3">81 µV</div>
+          <div class="mc-bar"><div class="mc-fill mf-high" id="mb3" style="width:81%"></div></div>
+        </div>
+        <div class="muscle-chip">
+          <div class="mc-name">Tricep</div>
+          <div class="mc-val mc-low" id="mv4">29 µV</div>
+          <div class="mc-bar"><div class="mc-fill mf-low" id="mb4" style="width:29%"></div></div>
+        </div>
+      </div>
+      <div class="section-label" style="padding:0 24px;margin-bottom:12px">Waveform</div>
+      <div class="graph-card">
+        <div class="graph-title">Flexor / Extensor</div>
+        <canvas class="graph" id="muscleGraph" height="90"></canvas>
+        <div class="graph-labels"><span>Flexor</span><span>Extensor</span></div>
+      </div>
+      <div class="graph-card">
+        <div class="graph-title">Bicep Activation</div>
+        <canvas class="graph" id="bicepGraph" height="90"></canvas>
+        <div class="graph-labels"><span>10s ago</span><span>Now</span></div>
+      </div>
+      <div class="session-row">
+        <div class="session-stat"><div class="sv">48 µV</div><div class="sl">Avg Signal</div></div>
+        <div class="session-stat"><div class="sv">81 µV</div><div class="sl">Peak Today</div></div>
+        <div class="session-stat"><div class="sv">2.4h</div><div class="sl">Active Time</div></div>
+      </div>
     </div>
-    <div class="nav-item" id="nav-muscle" onclick="goTab('muscle')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <polyline points="2,12 6,6 10,16 14,8 18,13 22,10"/>
-      </svg>Monitor
+
+    <!-- ALERTS TAB -->
+    <!-- stripe classes: danger (red), warn (orange), info/ok (green) -->
+    <div class="tab-page" id="tab-alerts">
+      <div class="page-header">
+        <div class="page-title">Notifications</div>
+      </div>
+      <div class="alerts-top">
+        <div class="section-label" style="padding:0;margin:0">Today</div>
+        <button class="clear-btn" onclick="clearAlerts()">Clear all</button>
+      </div>
+      <div class="alerts-list" id="alertsList">
+        <div class="alert-card">
+          <div class="a-stripe warn"></div>
+          <div class="a-icon">🔋</div>
+          <div class="a-body">
+            <div class="a-title">Battery at 72%</div>
+            <div class="a-desc">Consider charging before extended use. ~4h remaining.</div>
+            <div class="a-time">9:14 AM</div>
+          </div>
+          <div class="a-dot"></div>
+        </div>
+        <div class="alert-card">
+          <div class="a-stripe ok"></div>
+          <div class="a-icon">✅</div>
+          <div class="a-body">
+            <div class="a-title">Calibration Complete</div>
+            <div class="a-desc">Muscle mapping updated. Accuracy improved to 92%.</div>
+            <div class="a-time">8:51 AM</div>
+          </div>
+          <div class="a-dot gone"></div>
+        </div>
+        <div class="alert-card">
+          <div class="a-stripe info"></div>
+          <div class="a-icon">📡</div>
+          <div class="a-body">
+            <div class="a-title">Device Paired</div>
+            <div class="a-desc">Sleeve v2 — Right connected via BLE 5.0.</div>
+            <div class="a-time">8:43 AM</div>
+          </div>
+          <div class="a-dot gone"></div>
+        </div>
+        <div class="alert-card">
+          <div class="a-stripe danger"></div>
+          <div class="a-icon">⚠️</div>
+          <div class="a-body">
+            <div class="a-title">High Muscle Tension</div>
+            <div class="a-desc">Bicep activity exceeded threshold. Rest recommended.</div>
+            <div class="a-time">Yesterday · 6:22 PM</div>
+          </div>
+          <div class="a-dot gone"></div>
+        </div>
+        <div class="alert-card">
+          <div class="a-stripe warn"></div>
+          <div class="a-icon">🔁</div>
+          <div class="a-body">
+            <div class="a-title">Firmware Update Available</div>
+            <div class="a-desc">v2.1.4 — stability and new therapy patterns.</div>
+            <div class="a-time">Yesterday · 2:00 PM</div>
+          </div>
+          <div class="a-dot gone"></div>
+        </div>
+      </div>
     </div>
-    <div class="nav-item" id="nav-alerts" onclick="goTab('alerts')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      </svg>Alerts
-      <div class="nav-dot"></div>
-    </div>
-  </nav>
-</div>
 
-<div class="toast" id="toast"></div>
-</div><!-- /app-shell -->
+    <!-- BOTTOM NAV — fixed, never scrolls -->
+    <nav class="nav-bar">
+      <div class="nav-item active" id="nav-home" onclick="goTab('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+          <path d="M9 21V12h6v9"/>
+        </svg>Home
+      </div>
+      <div class="nav-item" id="nav-modes" onclick="goTab('modes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>Modes
+      </div>
+      <div class="nav-item" id="nav-muscle" onclick="goTab('muscle')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="2,12 6,6 10,16 14,8 18,13 22,10"/>
+        </svg>Monitor
+      </div>
+      <div class="nav-item" id="nav-alerts" onclick="goTab('alerts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>Alerts
+        <div class="nav-dot"></div>
+      </div>
+    </nav>
 
-<script>
-// ── HAPTICS ──
-const haptic = {
-  tap:     () => navigator.vibrate && navigator.vibrate(10),
-  double:  () => navigator.vibrate && navigator.vibrate([12,60,12]),
-  alert:   () => navigator.vibrate && navigator.vibrate([30,80,30,80,60]),
-  success: () => navigator.vibrate && navigator.vibrate([15,50,30]),
-};
+  </div><!-- /screen-main -->
 
-// ── LOGO LOADER ──
-(function(){
-  ['logoWrap','pairLogoBox'].forEach(function(id){
-    const wrap = document.getElementById(id);
-    if(!wrap) return;
-    const img = new Image();
-    img.onload = function(){
-      wrap.innerHTML = '';
-      const i = document.createElement('img');
-      i.src = 'sleeve-logo.png'; i.alt = 'Sleeve';
-      i.style.cssText = id==='logoWrap'
-        ? 'width:68px;height:68px;object-fit:contain;'
-        : 'width:100%;height:100%;object-fit:contain;padding:10px;';
-      wrap.appendChild(i);
-    };
-    img.src = 'sleeve-logo.png';
-  });
-})();
-
-// ── SCREEN TRANSITIONS ──
-function showScreen(id){
-  const cur = document.querySelector('.screen.active');
-  if(cur){ cur.classList.add('exit'); setTimeout(()=>cur.classList.remove('active','exit'),340); }
-  setTimeout(()=>document.getElementById('screen-'+id).classList.add('active'),180);
-}
-setTimeout(()=>showScreen('pair'), 2600);
-
-// ── PAIRING ──
-let pairState = 'idle';
-function startPairing(){
-  if(pairState!=='idle') return;
-  pairState = 'searching';
-  haptic.tap();
-  document.querySelectorAll('.pair-ring').forEach(r=>r.classList.add('pairing'));
-  const s = document.getElementById('pairStatus');
-  s.className = 'pair-status searching';
-  s.textContent = 'Scanning for Sleeve device…';
-  setTimeout(()=>{
-    haptic.double();
-    s.textContent = 'Device found nearby';
-    document.getElementById('pairFoundCard').classList.add('visible');
-    pairState = 'found';
-  }, 2100);
-}
-function connectDevice(){
-  const s = document.getElementById('pairStatus');
-  haptic.tap();
-  s.textContent = 'Connecting…';
-  document.querySelector('.pair-connect-btn').textContent = '…';
-  setTimeout(()=>{
-    haptic.success();
-    s.className = 'pair-status paired';
-    s.textContent = '✓ Connected';
-    setTimeout(()=>showScreen('main'), 700);
-  }, 1300);
-}
-
-// ── TABS ──
-let activeTab = 'home';
-function goTab(tab){
-  if(tab===activeTab) return;
-  document.getElementById('tab-'+activeTab).classList.remove('show');
-  document.getElementById('nav-'+activeTab).classList.remove('active');
-  activeTab = tab;
-  const el = document.getElementById('tab-'+tab);
-  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
-  document.getElementById('nav-'+tab).classList.add('active');
-  if(tab==='muscle') setTimeout(drawGraphs, 50);
-  if(tab==='alerts') setTimeout(triggerAlertHaptics, 100);
-}
-
-// ── ALERT HAPTICS ──
-function triggerAlertHaptics(){
-  const cards = document.querySelectorAll('#alertsList .alert-card');
-  let delay = 0;
-  cards.forEach(card=>{
-    const dot = card.querySelector('.a-dot');
-    if(!dot||dot.classList.contains('gone')) return;
-    const stripe = card.querySelector('.a-stripe');
-    const sev = stripe
-      ? (stripe.classList.contains('danger')?'danger':stripe.classList.contains('warn')?'warn':'info')
-      : 'info';
-    setTimeout(()=>{
-      if(sev==='danger') haptic.alert();
-      else if(sev==='warn') haptic.double();
-      else haptic.tap();
-    }, delay);
-    delay += 350;
-  });
-}
-
-// ── MODES ──
-let selectedMode = { icon:'✍️', name:'Writing Mode' };
-function selectMode(card, icon, name){
-  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
-  card.classList.add('selected');
-  selectedMode = { icon, name };
-}
-function applyMode(){
-  document.getElementById('homeModeIcon').textContent = selectedMode.icon;
-  document.getElementById('homeModeText').textContent = selectedMode.name;
-  showToast('Mode applied: '+selectedMode.name);
-}
-function updateSpeed(v){ document.getElementById('speedVal').textContent = {1:'Slow',2:'Medium',3:'Fast'}[v]; }
-
-// ── TOAST ──
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
-}
-
-// ── CLEAR ALERTS ──
-function clearAlerts(){
-  const l = document.getElementById('alertsList');
-  l.style.transition = 'opacity 0.3s'; l.style.opacity = '0';
-  setTimeout(()=>{
-    l.innerHTML = '<div style="text-align:center;color:var(--muted);padding:52px 0;font-size:14px;">No notifications</div>';
-    l.style.opacity = '1';
-    document.querySelector('.nav-dot').style.display = 'none';
-  }, 300);
-}
-
-// ── GRAPHS ──
-function drawWave(id, c1, c2, seed){
-  const canvas = document.getElementById(id); if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio||1;
-  const W = canvas.offsetWidth*dpr, H = canvas.offsetHeight*dpr;
-  canvas.width = W; canvas.height = H; ctx.clearRect(0,0,W,H);
-  function makePts(off){
-    const pts = [];
-    for(let i=0;i<=60;i++){
-      pts.push({
-        x:(i/60)*W,
-        y:(H/2)+Math.sin(i*0.38+seed+off)*H*0.2+Math.sin(i*0.85+seed*1.8+off)*H*0.09+(Math.random()-0.5)*H*0.05
-      });
-    }
-    return pts;
-  }
-  function drawLine(pts,color){
-    ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
-    for(let i=1;i<pts.length-1;i++)
-      ctx.quadraticCurveTo(pts[i].x,pts[i].y,(pts[i].x+pts[i+1].x)/2,(pts[i].y+pts[i+1].y)/2);
-    ctx.strokeStyle=color; ctx.lineWidth=2*dpr; ctx.stroke();
-  }
-  if(c2) drawLine(makePts(1.6),c2);
-  drawLine(makePts(0),c1);
-}
-function drawGraphs(){
-  drawWave('muscleGraph','#3d9e68','#5ec98a',2.1);
-  drawWave('bicepGraph','#d9943a',null,5.4);
-}
-
-// ── LIVE MUSCLE ──
-setInterval(()=>{
-  [{id:'mv1',bar:'mb1',base:68},{id:'mv2',bar:'mb2',base:42},{id:'mv3',bar:'mb3',base:81},{id:'mv4',bar:'mb4',base:29}]
-  .forEach(d=>{
-    const v = Math.max(10,Math.min(99,d.base+Math.round((Math.random()-0.5)*9)));
-    const el=document.getElementById(d.id), bar=document.getElementById(d.bar);
-    if(el) el.textContent=v+' µV';
-    if(bar) bar.style.width=v+'%';
-  });
-},2000);
-</script>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
 </body>
 </html>
